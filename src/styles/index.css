@@ -2,3 +2,24 @@
 	margin: 2rem 0 !important;
 	padding: 0;
 }
+
+h3 {
+	margin-top: .7rem;
+}
+
+h4 {
+	margin-top: .4rem;
+}
+
+.flaw-desc {
+	font-size: .8em;
+	color: var(--secondary-text-color);
+}
+
+/* Fixes the header hiding the headings. https://stackoverflow.com/questions/4086107/fixed-page-header-overlaps-in-page-anchors */
+:target::before {
+  content: "";
+  display: block;
+  height: 80px; /* fixed header height*/
+  margin: -80px 0 0; /* negative fixed header height */
+}

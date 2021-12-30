@@ -1,10 +1,10 @@
 module.exports = {
-  // pathPrefix: `/notes`, // If your Digital Garden is not published at the root of your website, use this.
+  pathPrefix: `/thinking-flaws`, // If your Digital Garden is not published at the root of your website, use this.
   siteMetadata: {
-    title: `Gatsby Garden`,
-    description: `A Digital Garden Tended by Gatsby`,
+    title: `Thinking Flaws`,
+    description: `A collection of all thinking flaws - cognitive biases, fallacies, psychological weirdities and more.`,
 
-    // siteUrl: `https://yoursite.com/notes/`, // URL at which your site will be published. This should be present if you want RSS feed.
+    siteUrl: `https://mindos.in/thinking-flaws/`, // URL at which your site will be published. This should be present if you want RSS feed.
     // headerMenu: [ // Top Navbar items
     //   {type: 'page', item: '', title: 'Home'}, // Type can be 'page', 'note', 'tag', or 'link'
     //   {type: 'page', item: 'sitemap', title: 'Sitemap'},
