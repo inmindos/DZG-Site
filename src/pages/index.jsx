@@ -7,7 +7,7 @@ import "../styles/index.css"
 export default function Home() {
   const data = useStaticQuery(graphql`
 		query HomeQuery {
-			homeNote: markdownRemark(fields: { slug: { eq: "/home" } }) {
+			homeNote: mdx(fields: { slug: { eq: "/home" } }) {
 	      html
 	      fields {
 	        title
@@ -17,7 +17,7 @@ export default function Home() {
 	        tags
 	      }
 	    }
-	    notes: allMarkdownRemark(
+	    notes: allMdx(
         	filter: { fields: { visibility: { eq: "public" } } }
         ) {
 			    edges {
@@ -75,13 +75,13 @@ export default function Home() {
 	      <p>Cognitive Biases addresses these issues...</p>
 
 	      <ol>
-				<li><a href="#info-overload">Information overload</a></li>
-				<li><a href="#no-meaning">Lack of meaning</a></li>
-				<li><a href="#act-fast">The need to act fast</a></li>
-				<li><a href="#what-to-remember">What should be remembered?</a></li>
+					<li><a href="#info-overload">Information overload</a></li>
+					<li><a href="#no-meaning">Lack of meaning</a></li>
+					<li><a href="#act-fast">The need to act fast</a></li>
+					<li><a href="#what-to-remember">What should be remembered?</a></li>
 				</ol>
 
-				<h3 id="info-overload">1. Information overload</h3>
+				<h3 className="section-header" id="info-overload">1. Information overload</h3>
 
 				<p>Our brain filters out information that it thinks is not important. There is too much information available - its not practical to process all of it.</p>
 				<h4>Notice only that are primed or repeated</h4>
@@ -101,7 +101,7 @@ export default function Home() {
 				<h4>We notice flaws in others easier than in ourselves.</h4>
 				{ getNotesTagged("cbias-notice-others-flaws") }
 
-				<h3 id="no-meaning">2. Not enough meaning</h3>
+				<h3 className="section-header" id="no-meaning">2. Not enough meaning</h3>
 				<p>The world is too complex to understand fully. So we compensate by filling in the gaps of our understanding to make better sense of it - or at least have a belief that we have an understanding of the world. We assign meaning to the world - we do our own sensemaking.</p>
 
 				<h4>We find patterns and meaning even with little data</h4>
@@ -127,7 +127,7 @@ export default function Home() {
 				<h4>Current mind state is projected to past and future</h4>
 				{ getNotesTagged("cbias-project-mind-state") }
 
-				<h3 id="act-fast">3. We have to act fast</h3>
+				<h3 className="section-header" id="act-fast">3. We have to act fast</h3>
 				<p>We evolved with the need to make quick decisions when faced with limited time and information. This programming continues in the present time in form of these thinking flaws.</p>
 
 				<h4>To act, we should feel important and impactful</h4>
@@ -147,7 +147,7 @@ export default function Home() {
 				<h4>We prefer simple or complete options over complex, ambiguous options</h4>
 				{ getNotesTagged("cbias-prefer-simple") }
 
-				<h3 id="what-to-remember">4. What to remember</h3>
+				<h3 className="section-header" id="what-to-remember">4. What to remember</h3>
 				<p>We have to prioritize what te remember and what to discard. We have a set of filters that will help us do this - but it can cause issues too.</p>
 
 				<h4>We edit memories after the event</h4>
@@ -165,7 +165,7 @@ export default function Home() {
 				{ getNotesTagged("cbias-memory-experience") }
 
 
-				<h2>Credits</h2>
+				<h3>Credits</h3>
 
 				<p>I've stood on the sholders of gaints to create this site. Most of the heavy lifting was done by brilliant people before me...</p>
 

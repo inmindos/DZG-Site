@@ -5,6 +5,7 @@
 
 h3 {
 	margin-top: .7rem;
+	border-top: 1px solid var(--secondary-text-color);
 }
 
 h4 {
