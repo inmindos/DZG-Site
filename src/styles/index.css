@@ -3,9 +3,14 @@
 	padding: 0;
 }
 
-h3 {
+h3.section-header {
 	margin-top: .7rem;
+	padding-top: .7rem;
 	border-top: 1px solid var(--secondary-text-color);
+}
+
+.note-page-section a {
+	text-decoration: underline;
 }
 
 h4 {

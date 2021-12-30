@@ -64,7 +64,7 @@ export default function Home() {
     </Layout>
   ) : (
     <Layout title="Home" type="home">
-      <div className="column is-half">
+      <div className="column is-half note-page-section">
         <div className="block">
           <h1>{siteConfig.siteMetadata.title}</h1>
           <p className="lead">{siteConfig.siteMetadata.description}</p>
