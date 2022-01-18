@@ -100,3 +100,7 @@
 .note-list .note-area:nth-child(odd) {
   background-color: var(--bg-sub);
 }
+
+.related-group a {
+  text-decoration: none;
+}
