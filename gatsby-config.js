@@ -1,5 +1,6 @@
 module.exports = {
   pathPrefix: `/thinking-flaws`, // If your Digital Garden is not published at the root of your website, use this.
+  trailingSlash: 'never', // Remove all trailing slashes on each URL, e.g. /x/ to /x
   siteMetadata: {
     title: `Thinking Flaws`,
     description: `A collection of all thinking flaws - cognitive biases, fallacies, psychological weirdities and more.`,
@@ -22,15 +23,17 @@ module.exports = {
 
     // menu: [ // This is the Table of Contents that comes in the home page if a Home Note is not specified. It can be much longer than the header menu.
     //   ... Same structure as headerMenu. You can have any depth level - multiple menus can be nested.
-    // ]
+    // ],
+
+    hoverPreview: true // If true, shows the content of an internal link in a tooltip when hovering over the link.
   },
   plugins: [
     `gatsby-plugin-sharp`,
     `gatsby-remark-images`,
-    `gatsby-plugin-remove-trailing-slashes`,
     `gatsby-plugin-dark-mode`,
     // { // Enable this if you want to have an RSS Feed. The `siteMetadata.siteUrl` property should be present for this to work
-    //   resolve: `gatsby-plugin-feed-mdx`,
+    //   // Also, you'll need to install this library. To do that, run the command `npm install gatsby-plugin-feed-mdx --save` in the same directory as this gatsby-config.js file.
+    //   resolve: `gatsby-plugin-feed`,
     //   options: {
     //     query: `
     //       {
@@ -91,26 +94,17 @@ module.exports = {
       options: {
         extensions: [`.mdx`, `.md`],
         gatsbyRemarkPlugins: [
+          'gatsby-remark-mermaid',
           {
             resolve: `gatsby-remark-images`,
             options: {
               maxWidth: 1200,
             },
           },
-          'gatsby-remark-mermaid',
-          // {
-          //   resolve: `gatsby-remark-double-brackets-link`,
-          //   options: {
-          //     titleToURLPath: `${__dirname}/src/utils/make-slug.js`,
-          //     stripBrackets: true,
-          //     parseWikiLinks: true,
-          //   },
-          // },
           {
-            resolve: `gatsby-remark-wiki-links`,
+            resolve: 'gatsby-remark-obsidian',
             options: {
-              slugify: `${__dirname}/src/utils/make-slug.js`,
-              stripBrackets: true
+              titleToURL: require(`${__dirname}/src/utils/make-slug.js`)
             }
           }
         ],
@@ -126,6 +120,22 @@ module.exports = {
     // },
 
     {
+      resolve: `gatsby-plugin-purgecss`,
+      options: {
+        // printRejected: true, // Print removed selectors and processed file names. Use for debugging.
+        // develop: true, // Enable while using `gatsby develop`
+        // tailwind: true, // Enable tailwindcss support
+        // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
+        // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
+        purgeCSSOptions: {
+          // https://purgecss.com/configuration.html#options
+          // safelist: ['safelist'], // Don't remove this selector
+        },
+        // More options defined here https://purgecss.com/configuration.html#options
+      },
+    },
+
+    {
       resolve: 'gatsby-plugin-local-search',
       options: {
         // A unique name for the search index. This should be descriptive of
@@ -138,7 +148,10 @@ module.exports = {
 
         // Provide options to the engine. This is optional and only recommended for advanced users.
         // Note: Only the flexsearch engine supports options.
-        engineOptions: 'speed',
+        engineOptions: {
+            present: 'speed',
+            tokenize: 'forward'
+        },
 
         // GraphQL query used to fetch all data for the search index. This is required.
         query: `

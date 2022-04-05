@@ -55,7 +55,7 @@ export default function Header({ title, type, description }) {
           <meta content="website" property="og:type"></meta>
         )}
 
-        <title>{pageTitle}</title>
+        <title>{title ? title : pageTitle}</title>
 
         <link rel="apple-touch-icon" href="/img/favicon.png" />
         <link

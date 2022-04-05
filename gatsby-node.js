@@ -8,23 +8,16 @@ const siteConfig = require(`./gatsby-config`)
 exports.onCreateNode = ({ node, getNode, actions }) => {
   if (node.internal.type === `Mdx`) {
     const { createNodeField } = actions
-    const title = node.frontmatter.title
-      ? node.frontmatter.title
-      : createFilePath({ node, getNode, basePath: `_notes` }).replace(
-          /^\/(.+)\/$/,
-          '$1'
-        )
+
+    const fileName = createFilePath({ node, getNode, basePath: `_notes` }).replace(/^\/(.+)\/$/, '$1')
+    const title = node.frontmatter.title || fileName
     const slug = node.frontmatter.slug
       ? makeSlug(node.frontmatter.slug)
-      : makeSlug(title)
+      : makeSlug(fileName)
     const fileNode = getNode(node.parent)
-    const date = node.frontmatter.date ? node.frontmatter.date : fileNode.mtime
-    const visibility = node.frontmatter.visibility
-      ? node.frontmatter.visibility
-      : 'public'
-    const excerpt = node.frontmatter.excerpt
-      ? node.frontmatter.excerpt
-      : node.excerpt
+    const date = node.frontmatter.date || fileNode.mtime
+    const visibility = node.frontmatter.visibility || 'public'
+    const excerpt = node.frontmatter.excerpt || node.excerpt
 
     // If you are adding new fields here, add it to createSchemaCustomization() as well.
 
@@ -32,6 +25,11 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
       node,
       name: `slug`,
       value: `/${slug}`,
+    })
+    createNodeField({
+      node,
+      name: `fileName`,
+      value: fileName,
     })
     createNodeField({
       node,
@@ -68,6 +66,7 @@ exports.createPages = async ({ graphql, actions }) => {
           node {
             fields {
               slug
+              fileName
               title
               visibility
               excerpt
@@ -80,6 +79,7 @@ exports.createPages = async ({ graphql, actions }) => {
             }
             excerpt
             rawBody
+            body
           }
         }
       }
@@ -91,7 +91,7 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `)
   const allNotes = _.get(result, `data.allMdx.edges`)
-
+  
   // Make a map of how notes link to other links. This is necessary to have back links and graph visualisation
   let refersTo = {} // refersTo['note title'] = ['note that "note title" linked to', 'another note that "note title" linked to', ...]
   let referredBy = {} // referredBy['note title'] = [{title: 'note that linked to "note title"' ...}, {title: 'another note that linked to "note title"', ...}, ...]
@@ -99,6 +99,7 @@ exports.createPages = async ({ graphql, actions }) => {
   let linkageCache = {} // Caches all linking. To prevent duplicate linking. Eg. linkageCache['note title->linked note'] = true
 
   const allNoteTitles = allNotes.map(note => note.node.fields.title) // A list of all note titles. Helps in finding the correct title in a case-insensitive manner.
+  let allNotesByTitle = {}
 
   // I didn't used the much more cleaner foreach because the `refersTo` was not working well with that.
   for (let i = 0; i < result.data.allMdx.edges.length; i++) {
@@ -106,7 +107,9 @@ exports.createPages = async ({ graphql, actions }) => {
 
     const title = node.fields.title
     const slug = node.fields.slug
-    const excerpt = node.fields.excerpt ? node.fields.excerpt : node.excerpt
+    const excerpt = node.fields.excerpt || node.excerpt
+
+    allNotesByTitle[title] = node
 
     // Go thru all the notes, create a map of how references map.
 
@@ -128,26 +131,48 @@ exports.createPages = async ({ graphql, actions }) => {
         title: title,
         excerpt: excerpt,
         slug: slug,
+        body: node.body
       })
 
       linkageCache[title + '->' + linkTitle] = true
     }
   }
 
-  // Create page for all notes.
+  let linkedNotes = {}
+  // Create pages for all notes.
   for (let i = 0; i < result.data.allMdx.edges.length; i++) {
     const node = result.data.allMdx.edges[i].node
-    const title = node.fields.title ? node.fields.title : node.frontmatter.title
-    const aliases = node.frontmatter.aliases ? node.frontmatter.aliases : []
+    const title = node.fields.title || node.frontmatter.title
+    const aliases = node.frontmatter.aliases || []
 
+    // Add all notes linked to and from this note together.
+    let linkedNoteTitles = []
+    if(refersTo[title]) linkedNoteTitles = refersTo[title].map(note => note.title)
+    if(referredBy[title]) linkedNoteTitles = linkedNoteTitles.concat(referredBy[title].map(note => note.title))
+
+    for(let linkTitle of linkedNoteTitles) {
+      if(allNotesByTitle[linkTitle] === undefined) continue
+
+      // This reduces the page context size. Use only things used in note.jsx. Otherwise I would have just set it as `node`.
+      // Only the linked(from and to the current note) needs to be in this.
+      linkedNotes[linkTitle.toLowerCase()] = {
+        title: allNotesByTitle[linkTitle].title, 
+        slug: allNotesByTitle[linkTitle].fields.slug, 
+        body: allNotesByTitle[linkTitle].body 
+      }
+    }
+
+    // Context is becaming too big. I'm getting this warnding...
+    //      `The size of at least one page context chunk exceeded 500kb, which could lead to degraded performance. Consider putting less data in the page context.`
     createPage({
       path: node.fields.slug,
       component: path.resolve(`./src/templates/note.jsx`),
       context: {
         title: title,
         slug: node.fields.slug,
-        refersTo: refersTo[title] ? refersTo[title] : [],
-        referredBy: referredBy[title] ? referredBy[title] : [],
+        refersTo: refersTo[title] || [],
+        referredBy: referredBy[title] || [],
+        linkedNotes: linkedNotes
       },
     })
 
@@ -155,6 +180,15 @@ exports.createPages = async ({ graphql, actions }) => {
     for (let j = 0; j < aliases.length; j++) {
       createRedirect({
         fromPath: `/${makeSlug(aliases[j])}`,
+        toPath: node.fields.slug,
+        redirectInBrowser: true,
+        isPermanent: true,
+      })
+    }
+
+    if(node.fields.slug != '/' + makeSlug(node.fields.fileName)) { // If there is a custom slug, setup a redirect.
+      createRedirect({
+        fromPath: `/${makeSlug(node.fields.fileName)}`,
         toPath: node.fields.slug,
         redirectInBrowser: true,
         isPermanent: true,
@@ -168,6 +202,7 @@ exports.createPages = async ({ graphql, actions }) => {
     context: {
       allRefersTo: refersTo,
       allReferredBy: referredBy,
+      allNotes: allNotes
     },
   })
 
@@ -239,8 +274,9 @@ exports.createPages = async ({ graphql, actions }) => {
       context: {
         title: title,
         slug: node.fields.slug,
-        refersTo: refersTo[title] ? refersTo[title] : [],
-        referredBy: referredBy[title] ? referredBy[title] : [],
+        refersTo: refersTo[title] || [],
+        referredBy: referredBy[title] || [],
+        linkedNotes: []
       },
     })
   }
@@ -273,6 +309,7 @@ exports.createSchemaCustomization = ({ actions }) => {
     """
     type Frontmatter @infer {
       title: String
+      fileName: String
       date: Date @dateformat
       tags: [String]
       aliases: [String]

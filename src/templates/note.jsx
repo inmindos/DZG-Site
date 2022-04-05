@@ -1,7 +1,9 @@
 import React from 'react'
 import { graphql, Link, navigate } from 'gatsby'
 import { MDXRenderer } from 'gatsby-plugin-mdx'
+import { MDXProvider } from "@mdx-js/react"
 import { Graph } from 'react-d3-graph'
+import Tooltip from '../components/tooltip'
 import Layout from '../layout/layout'
 import '../styles/note.css'
 import '../styles/graph.css'
@@ -43,9 +45,9 @@ export default function Note({ pageContext, data }) {
   }
 
   const onClickNode = function (nodeId) {
-    if (nodeId === 'Unlinked') return
-    const slug = makeSlug(nodeId)
-    navigate(`/${slug}`)
+    if (nodeId === 'No Links') return
+    const node = pageContext.linkedNotes[nodeId]
+    navigate(`${node.slug}`)
   }
 
   // the graph configuration, just override the ones you need
@@ -59,6 +61,33 @@ export default function Note({ pageContext, data }) {
       size: 120,
       fontSize: 10,
     },
+  }
+
+  const TooltipLink = (props) => {
+    if(props.href.includes("http")) { // External link
+      // eslint-disable-next-line
+      return <a { ...props } />
+
+    } else if(typeof props.children !== 'string') { // There might be cases where an image is refered(or other non notes). 
+      // eslint-disable-next-line
+      return <a { ...props } />
+
+    } else if(!pageContext.linkedNotes) { // For unlisted notes. Causes a error otherwise. Because of this, Tooltips are NOT availabe on unlisted notes.
+      // eslint-disable-next-line
+      return <a { ...props } />
+
+    } else {
+      const title = props.children.toLowerCase()
+      let linkedNote = pageContext.linkedNotes[title] || null
+
+      if(linkedNote) {
+        return (<Tooltip content={ linkedNote.body }>
+                  <Link { ...props } to={ `/${props.href}` } title="" />
+                </Tooltip>)
+      } else {
+        return <Link { ...props } to={ `/${props.href}` } />
+      }
+    }
   }
 
   return (
@@ -89,31 +118,37 @@ export default function Note({ pageContext, data }) {
 
             <h1 className="note-title">{post.fields.title}</h1>
             <div className="note-content">
-              <MDXRenderer>{post.body}</MDXRenderer>
+              {/*<MDXRenderer>{post.body}</MDXRenderer>*/}
+              <MDXProvider components={{ a: TooltipLink }}>
+                <MDXRenderer>{post.body}</MDXRenderer>
+              </MDXProvider>
             </div>
 
             <div className="note-meta">
               {pageContext.referredBy.length ? (
                 <div className="related note-references">
                   <h5 className="block-title">Links to this note</h5>
+
                   <div className="related-wrapper">
                     {pageContext.referredBy.map((note, index) => (
-                      <div key={index} className="related-group">
+                      <div key={index} className="related-group block-box">
+                      <Tooltip content={ note.body }>
                         <Link to={`/${makeSlug(note.title)}`}>
-                          <h4>{note.title}</h4>
-                          <p className="related-excerpt">{note.excerpt}</p>
+                          <h4 className="related-title">{note.title}</h4>
+                          <p className="related-excerpt muted-text">{note.excerpt}</p>
                         </Link>
+                      </Tooltip>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : null}
 
-              <div className="related block-area">
+              <div className="block-area note-references">
                 <h5 className="block-title">Meta</h5>
-                <div className="related-wrapper">
+                <div className="related-wrapper block-box">
                   <div className="related-group">
-                    <p>
+                    <p className="muted-text">
                       <strong className="note-meta-title">Published on: </strong>{' '}
                       {moment(new Date(post.fields.date)).format('Do MMMM, YYYY')}
                     </p>
@@ -122,7 +157,7 @@ export default function Note({ pageContext, data }) {
                     ) : null}
 
                     {post.frontmatter.tags ? (
-                      <div className="note-tags">
+                      <div className="note-tags muted-text">
                         <strong className="note-meta-title">
                           Tagged With:{' '}
                         </strong>
@@ -195,7 +230,7 @@ function Source({ src }) {
   }
 
   return (
-    <p>
+    <p className="muted-text">
       <strong className="note-meta-title">Source</strong>: {link}
     </p>
   )
@@ -205,6 +240,7 @@ export const query = graphql`
   query($slug: String!) {
     mdx(fields: { slug: { eq: $slug } }) {
       body
+      rawBody
       fields {
         title
         date
