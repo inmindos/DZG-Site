@@ -7,20 +7,40 @@ module.exports = {
     description: `A collection of all thinking flaws - cognitive biases, fallacies, psychological weirdities and more.`,
 
     siteUrl: `https://mindos.in/thinking-flaws/`, // URL at which your site will be published. This should be present if you want RSS feed.
-    // headerMenu: [ // Top Navbar items
-    //   {type: 'page', item: '', title: 'Home'}, // Type can be 'page', 'note', 'tag', or 'link'
-    //   {type: 'page', item: 'sitemap', title: 'Sitemap'},
-    //   {type: 'page', item: 'rss.xml', title: 'RSS'},
-    //   {
-    //     type: 'page', item: 'tags', title: 'Tags',
-    //     menu: [ // Only one level depth, please.
-    //       {type: 'tag',item: 'zettelkasten'},
-    //       {type: 'tag',item: 'philosophy'},
-    //       {type: 'tag',item: 'psychology'},
-    //       {type: 'tag',item: 'rationality'},
-    //     ]
-    //   },
-    // ],
+    headerMenu: [ // Top Navbar items
+      {type: 'page', item: '', title: 'Home'},
+      {type: 'link', item: '/#info-overload', title: '1. Information overload', menu: [
+        {type: 'tag', item: 'cbias-notice-primed-repeated', title: 'Notice primed or repeated'},
+        {type: 'tag', item: 'cbias-notice-specific', title: 'Bizarre/funny is more noticeable'},
+        {type: 'tag', item: 'cbias-notice-change', title: 'Change is Noticed'},
+        {type: 'tag', item: 'cbias-notice-confirmation', title: 'Drawn exsisting beliefs'},
+        {type: 'tag', item: 'cbias-notice-others-flaws', title: 'Notice flaws in others'},
+      ]},
+
+      {type: 'link', item: '/#no-meaning', title: '2. Not enough meaning', menu: [
+        {type: 'tag', item: 'cbias-meaning-from-little-data', title: 'Find patterns with little data'},
+        {type: 'tag', item: 'cbias-meaning-from-stereotypes', title: 'Jump to conclusions using stereotypes'},
+        {type: 'tag', item: 'cbias-known-things-better', title: 'Liked or known things are better'},
+        {type: 'tag', item: 'cbias-math-simplification', title: 'Simplification of Probability and Numbers'},
+        {type: 'tag', item: 'cbias-guess-thoughts', title: 'Think we know what others think'},
+        {type: 'tag', item: 'cbias-project-mind-state', title: 'Current mind state is projected'},
+      ]},
+
+      {type: 'link', item: '/#act-fast', title: '3. We have to act fast', menu: [
+        {type: 'tag', item: 'cbias-act-fast-important', title: 'Feel important and impactful'},
+        {type: 'tag', item: 'cbias-favor-immediate', title: 'Favor immediate, known things'},
+        {type: 'tag', item: 'cbias-finish', title: 'We want to finish things'},
+        {type: 'tag', item: 'cbias-autonomy', title: 'Want to have autonomy and status'},
+        {type: 'tag', item: 'cbias-prefer-simple', title: 'Simple or complete over complex, ambiguous'},
+      ]},
+
+      {type: 'link', item: '/#what-to-remember', title: '4. What to remember', menu: [
+        {type: 'tag', item: 'cbias-memory-edit', title: 'We edit memories'},
+        {type: 'tag', item: 'cbias-memory-general', title: 'Discard specifics for generalizations'},
+        {type: 'tag', item: 'cbias-reduce-to-key', title: 'Reduce events and lists'},
+        {type: 'tag', item: 'cbias-memory-experience', title: 'Store memory differently based on the experience'},
+      ]},
+    ],
 
     // menu: [ // This is the Table of Contents that comes in the home page if a Home Note is not specified. It can be much longer than the header menu.
     //   ... Same structure as headerMenu. You can have any depth level - multiple menus can be nested.

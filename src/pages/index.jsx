@@ -1,42 +1,28 @@
 import React from 'react'
 import { graphql, useStaticQuery, Link } from 'gatsby'
-import { MDXRenderer } from 'gatsby-plugin-mdx'
 import Layout from '../layout/layout'
 import siteConfig from '../../gatsby-config'
-import NoteList from '../components/note-list'
-import Search from '../components/search'
 import '../styles/index.css'
-import { DefaultMenuStructure, MenuRoot } from '../utils/menu-structure'
 
 export default function Home() {
   const data = useStaticQuery(graphql`
     query HomeQuery {
-      homeNote: mdx(frontmatter: {slug: {eq: "home"}}) {
-        body
-        fields {
-          title
-          date
-        }
-        frontmatter {
-          tags
-        }
-      }
       notes: allMdx(
-          filter: { fields: { visibility: { eq: "public" } } }
-        ) {
-          edges {
-            node {
-              excerpt
-              fields {
-                slug
-                title
-                date
-              }
-              frontmatter {
-                tags
-              }
+        filter: { fields: { visibility: { eq: "public" } } }
+      ) {
+        edges {
+          node {
+            excerpt
+            fields {
+              slug
+              title
+              date
+            }
+            frontmatter {
+              tags
             }
           }
+        }
       }
     }`)
 
@@ -54,18 +40,7 @@ export default function Home() {
     ))}</ul>)
   }
 
-  return data.homeNote ? (
-    <Layout title={data.homeNote.fields.title} type="home">
-      <div className="column is-half">
-        <div className="note-area">
-          <h1 className="note-title">{data.homeNote.fields.title}</h1>
-          <div className="note-content">
-            <MDXRenderer>{ data.homeNote.body }</MDXRenderer>
-          </div>
-        </div>
-      </div>
-    </Layout>
-  ) : (
+  return (
     <Layout title="Thinking Flaws - Cognitive Biases, Fallacies and More" type="home">
       <div className="column is-half-widescreen is-two-thirds-desktop">
         <div className="note-page-section">
@@ -82,7 +57,7 @@ export default function Home() {
             <li><a href="#info-overload">1. Information overload</a>
             <ul>
               <li><a href="#cbias-notice-primed-repeated">Notice only that are primed or repeated</a></li>
-              <li><a href="#cbias-notice-specific">Bizarre/funny/visually-striking/anthropomorphic are more Noticeable</a></li>
+              <li><a href="#cbias-notice-specific">Bizarre/funny/visually-striking/anthropomorphic are more noticeable</a></li>
               <li><a href="#cbias-notice-change">Change is Noticed Prominantly</a></li>
               <li><a href="#cbias-notice-confirmation">Drawn to details that confirms existing beliefs</a></li>
               <li><a href="#cbias-notice-others-flaws">We notice flaws in others easier than in ourselves.</a></li>
