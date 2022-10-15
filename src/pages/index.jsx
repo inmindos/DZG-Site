@@ -66,7 +66,7 @@ export default function Home() {
       </div>
     </Layout>
   ) : (
-    <Layout title="Home" type="home">
+    <Layout title="Thinking Flaws - Cognitive Biases, Fallacies and More" type="home">
       <div className="column is-half-widescreen is-two-thirds-desktop">
         <div className="note-page-section">
           <div className="block">
@@ -197,7 +197,7 @@ export default function Home() {
 
         <div className="note-page-section">
           <h3 className="section-header" id="what-to-remember">4. What to remember</h3>
-          <p>We have to prioritize what te remember and what to discard. We have a set of filters that will help us do this - but it can cause issues too.</p>
+          <p>We have to prioritize what to remember and what to discard. We have a set of filters that will help us do this - but it can cause issues too.</p>
 
           <h4 id="cbias-memory-edit">We edit memories after the event</h4>
           { getNotesTagged("cbias-memory-edit") }

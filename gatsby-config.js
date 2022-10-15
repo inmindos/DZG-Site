@@ -1,6 +1,7 @@
 module.exports = {
-  pathPrefix: `/thinking-flaws`, // If your Digital Garden is not published at the root of your website, use this.
+  pathPrefix: '/thinking-flaws', // If your Digital Garden is not published at the root of your website, use this.
   trailingSlash: 'never', // Remove all trailing slashes on each URL, e.g. /x/ to /x
+
   siteMetadata: {
     title: `Thinking Flaws`,
     description: `A collection of all thinking flaws - cognitive biases, fallacies, psychological weirdities and more.`,
